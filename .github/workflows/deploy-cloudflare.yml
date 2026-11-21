@@ -115,21 +115,8 @@ jobs:
           name = "email"
           EOF
           fi
+          python3 replace-wrangler-values.py "$CONFIG_FILE" NAME CUSTOM_DOMAIN DOMAIN ADMIN PASSWORD JWT_SECRET R2_BUCKET_NAME PROJECT_LINK ANALYSIS_CACHE AI_MODEL LINUXDO_CLIENT_ID LINUXDO_CLIENT_SECRET LINUXDO_CALLBACK_URL
 
-          sed -i "s|\${NAME}|${NAME}|g" "$CONFIG_FILE"
-          sed -i "s|\${CUSTOM_DOMAIN}|${CUSTOM_DOMAIN}|g" "$CONFIG_FILE"
-          sed -i "s|\"\${DOMAIN}\"|${DOMAIN}|g" "$CONFIG_FILE"
-          sed -i "s|\${ADMIN}|${ADMIN}|g" "$CONFIG_FILE"
-          sed -i "s|\${PASSWORD}|${PASSWORD}|g" "$CONFIG_FILE"
-          sed -i "s|\${JWT_SECRET}|${JWT_SECRET}|g" "$CONFIG_FILE"
-          sed -i "s|\${R2_BUCKET_NAME}|${R2_BUCKET_NAME}|g" "$CONFIG_FILE"
-          sed -i "s|\${PROJECT_LINK}|${PROJECT_LINK}|g" "$CONFIG_FILE"
-          sed -i "s|\${ANALYSIS_CACHE}|${ANALYSIS_CACHE}|g" "$CONFIG_FILE"
-          sed -i "s|\${AI_MODEL}|${AI_MODEL}|g" "$CONFIG_FILE"
-          sed -i "s|\${LINUXDO_CLIENT_ID}|${LINUXDO_CLIENT_ID}|g" "$CONFIG_FILE"
-          sed -i "s|\${LINUXDO_CLIENT_SECRET}|${LINUXDO_CLIENT_SECRET}|g" "$CONFIG_FILE"
-          sed -i "s|\${LINUXDO_CALLBACK_URL}|${LINUXDO_CALLBACK_URL}|g" "$CONFIG_FILE"
-          
           echo "✅ Environment setup completed."
 
       - name: ⚡ Set up KV database
@@ -139,7 +126,7 @@ jobs:
           CONFIG_FILE="wrangler-action.toml"
           
           if [ -n "$KV_NAMESPACE_ID" ]; then
-            sed -i "s|\${KV_NAMESPACE_ID}|${KV_NAMESPACE_ID}|g" "$CONFIG_FILE"
+            python3 replace-wrangler-values.py "$CONFIG_FILE" KV_NAMESPACE_ID
             echo "✅ Using the database from environment variables."
             exit 0
           fi
@@ -167,7 +154,7 @@ jobs:
             KV_ID=$(echo "$KV_LIST" | jq -r ".[] | select(.title == \"$NAME\") | .id")
           fi
           
-          sed -i "s|\${KV_NAMESPACE_ID}|$KV_ID|g" "$CONFIG_FILE"
+          KV_NAMESPACE_ID="$KV_ID" python3 replace-wrangler-values.py "$CONFIG_FILE" KV_NAMESPACE_ID
           echo "✅ Setup completed."
 
       - name: 🐬 Set up D1 database
@@ -177,7 +164,7 @@ jobs:
           CONFIG_FILE="wrangler-action.toml"
           
           if [ -n "$D1_DATABASE_ID" ]; then
-            sed -i "s|\${D1_DATABASE_ID}|${D1_DATABASE_ID}|g" "$CONFIG_FILE"
+            python3 replace-wrangler-values.py "$CONFIG_FILE" D1_DATABASE_ID
             echo "✅ Using the database from environment variables."
             exit 0
           fi
@@ -205,7 +192,7 @@ jobs:
             D1_ID=$(echo "$DB_LIST" | jq -r ".[] | select(.name == \"$NAME\") | .uuid")
           fi
           
-          sed -i "s|\${D1_DATABASE_ID}|$D1_ID|g" "$CONFIG_FILE"
+          D1_DATABASE_ID="$D1_ID" python3 replace-wrangler-values.py "$CONFIG_FILE" D1_DATABASE_ID
           echo "✅ Setup completed."
 
       - name: 🚀 Start deployment
