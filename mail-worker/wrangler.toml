@@ -57,15 +57,7 @@ new_sqlite_classes = ["MailHub"]
 
 [build]
 command = "pnpm --prefix ../mail-vue install && pnpm --prefix ../mail-vue run build"
-{
-  // ...
-  "vars": {
-    "admin": "admin@damcurryrice.com",
-    "domain": "[\"damcurryrice.com\",\"pengjun.qzz.io\",\"fumo.damcurryrice.com\"]",
-    "jwt_secret": "ticp1491"
-  },
-  // ...
-}
+
 
 
 
